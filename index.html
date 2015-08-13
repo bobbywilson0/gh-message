@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Mailbeam</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+        <link href="main.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="bundle.js" charset="utf-8"></script>
+
+    </head>
+    <body>
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/"><i class="fa fa-rocket"></i>Mailbeam</a>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <p class="lead">Send an encrypted message to a Github user.</p>
+                    <p class="small">Note: RSA support only for now.</p>
+
+                        <div id="remote" class="form-group">
+                            <label for="username">Github Username</label><br/>
+                            <input id="username" class="form-control typeahead" type="text" placeholder="Github Username">
+                        </div>
+                        <div class="form-group">
+                            <label for="input">Message</label><br/>
+                            <textarea id="input" class="form-control" name="input" rows="4" placeholder="A super secret message..."></textarea>
+                        </div>
+
+                        <button id="execute" class="btn btn-primary">Encrypt</button>
+                    <div class="output">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script id="result" type="text/x-handlebars-template">
+            <p><strong>Instructions</strong></p>
+            <ol>
+                <li>Attach the key and message in an email, or just paste them inline.</li>
+                <li>The recipient can copy and paste the following command assuming the files are located in ~/Downloads and your OpenSSH
+                    private key is located in ~/.ssh.</li>
+                <li><pre>openssl enc -d -a -nosalt -aes-256-cbc -in ~/Downloads/message.txt -k \
+$(openssl enc -d -A -base64 -in ~/Downloads/key.txt | \
+openssl rsautl -decrypt -oaep -inkey ~/.ssh/id_rsa)</pre></li>
+                <li>The commands above decrypt a secret that was encrypted with your public key, and uses that secret to decrypt
+                    the message that was sent to you.</li>
+            </ol>
+            {{#each this}}
+            <hr>
+            <div class="padded">
+                <p><strong>Encrypted Message</strong></p>
+                <pre>{{message}}</pre>
+                <a download="message.txt" class="btn btn-default" href="data:application/octet-stream;content-disposition:attachment;charset=utf-8,{{downloadMessage}}">Download</a>
+            </div>
+            <div class="padded">
+                <p><strong>Encrypted Key</strong></p>
+                <pre>{{key}}</pre>
+                <a download="key.txt" class="btn btn-default" href="data:application/octet-stream;content-disposition:attachment;charset=utf-8,{{key}}">Download</a>
+            </div>
+            {{/each}}
+        </script>
+    </body>
+</html>
+
+
