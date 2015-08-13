@@ -2,14 +2,17 @@
 lock '3.4.0'
 
 set :application, 'gh-message'
-set :repo_url, 'git@bitbucket.com:me/gh-message.git'
+set :repo_url, 'git@bitbucket.org:bobbywilson0/gh-message.git'
+server '162.243.185.19', port: 22, roles: [:web, :app, :db], primary: true
+set :user,            'deploy'
 
 set :pty,             true
 set :use_sudo,        false
 set :stage,           :production
 set :deploy_via,      :remote_cache
 set :deploy_to,       "/home/#{fetch(:user)}/apps/#{fetch(:application)}"
-set :user,            'deploy'
+set :ssh_options,     { forward_agent: true, user: fetch(:user), keys: %w(~/.ssh/id_rsa.pub) }
+
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
@@ -37,16 +40,3 @@ set :log_level, :info
 
 # Default value for keep_releases is 5
 # set :keep_releases, 5
-
-namespace :deploy do
-
-  after :restart, :clear_cache do
-    on roles(:web), in: :groups, limit: 3, wait: 10 do
-      # Here we can do anything such as:
-      # within release_path do
-      #   execute :rake, 'cache:clear'
-      # end
-    end
-  end
-
-end
